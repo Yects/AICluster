@@ -88,7 +88,7 @@ jobs:
         run: |
           python -m venv venv
           .\venv\Scripts\activate
-          pip install --upgrade pip setuptools wheel pyinstaller
+          pip install --upgrade pip setuptools wheel pyinstaller 
           pip install .
         shell: cmd
 
@@ -100,7 +100,7 @@ jobs:
         shell: cmd
 
       - name: Zip output (Windows)
-        run: Compress-Archive -Path dist/* -DestinationPath dist-windows.zip
+        run: Compress-Archive -Path dist -DestinationPath dist-windows.zip
         shell: pwsh
 
       - name: Upload artifact (Windows)
