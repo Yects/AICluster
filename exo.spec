@@ -2,8 +2,8 @@
 import sys
 import os
 
+name = os.environ.get('EXO_NAME', 'exo')
 block_cipher = None
-
 
 spec_dir = os.path.dirname(os.path.abspath(SPEC))
 models_dir = os.path.join(spec_dir, 'exo', 'inference', 'mlx', 'models')
@@ -60,7 +60,7 @@ exe = EXE(
     a.zipfiles,
     a.datas,
     [],
-    name='exo',
+    name=name,
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
