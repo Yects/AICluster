@@ -1,0 +1,114 @@
+name: Build Standalone Executables
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  # Linux Job (Builds both Linux and Windows executables)
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y curl libgmp-dev libmpfr-dev libmpc-dev libssl-dev libxml2-dev libxslt1-dev zlib1g-dev wine64
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install --upgrade pip setuptools wheel pyinstaller
+          pip install .
+
+      - name: Build Linux executable
+        run: |
+          source .venv/bin/activate
+          EXO_NAME=exo-linux pyinstaller exo.spec
+
+      - name: Build Windows executable with Wine
+        run: |
+          source .venv/bin/activate
+          EXO_NAME=exo-windows pyinstaller exo.spec
+
+      - name: Zip output (Linux and Windows)
+        run: zip -r dist-linux-windows.zip dist/
+
+      - name: Upload artifact (Linux and Windows)
+        uses: actions/upload-artifact@v3
+        with:
+          name: linux-windows-executables
+          path: dist-linux-windows.zip
+
+  # macOS Job
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12
+
+      - name: Install dependencies
+        run: |
+          python3 -m venv .venv
+          source .venv/bin/activate
+          pip install --upgrade pip setuptools wheel pyinstaller
+          pip install .
+
+      - name: Build macOS executable
+        run: |
+          source .venv/bin/activate
+          EXO_NAME=exo-macos pyinstaller exo.spec
+
+      - name: Zip output (macOS)
+        run: zip -r dist-macos.zip dist/
+
+      - name: Upload artifact (macOS)
+        uses: actions/upload-artifact@v3
+        with:
+          name: macos-executable
+          path: dist-macos.zip
+
+  # Windows Job
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12
+
+      - name: Install dependencies
+        run: |
+          python -m venv .venv
+          .\.venv\Scripts\activate
+          pip install --upgrade pip setuptools wheel pyinstaller
+          pip install .
+
+      - name: Build Windows executable
+        run: |
+          .\.venv\Scripts\activate
+          EXO_NAME=exo-windows pyinstaller exo.spec
+
+      - name: Zip output (Windows)
+        run: powershell Compress-Archive -Path dist/* -DestinationPath dist-windows.zip
+
+      - name: Upload artifact (Windows)
+        uses: actions/upload-artifact@v3
+        with:
+          name: windows-executable
+          path: dist-windows.zip
