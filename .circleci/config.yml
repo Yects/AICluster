@@ -200,6 +200,13 @@ jobs:
           name: Create installables
           command: |
             ./create_installables.sh
+      - run:
+          name: Zip dist folder
+          command: |
+            zip -r dist.zip dist
+      - store_artifacts:
+          path: dist.zip
+          destination: executables
 
   # chatgpt_api_integration_test_tinygrad:
   #   macos:
