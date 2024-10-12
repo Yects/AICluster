@@ -90,14 +90,18 @@ jobs:
           .\venv\Scripts\activate
           pip install --upgrade pip setuptools wheel pyinstaller
           pip install .
+        shell: cmd
 
       - name: Build Windows executable
         run: |
-          .\.venv\Scripts\activate
-          EXO_NAME=exo-windows pyinstaller exo.spec
+          .\venv\Scripts\activate
+          set EXO_NAME=exo-windows
+          pyinstaller exo.spec
+        shell: cmd
 
       - name: Zip output (Windows)
-        run: powershell Compress-Archive -Path dist/* -DestinationPath dist-windows.zip
+        run: Compress-Archive -Path dist/* -DestinationPath dist-windows.zip
+        shell: pwsh
 
       - name: Upload artifact (Windows)
         uses: actions/upload-artifact@v3
