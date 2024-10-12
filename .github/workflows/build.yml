@@ -7,12 +7,11 @@ on:
   pull_request:
 
 jobs:
-  # Linux Job (Builds both Linux and Windows executables)
   build-linux:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python 3.12
         uses: actions/setup-python@v4
@@ -23,36 +22,30 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y curl libgmp-dev libmpfr-dev libmpc-dev libssl-dev libxml2-dev libxslt1-dev zlib1g-dev wine64
-          python -m venv .venv
-          source .venv/bin/activate
+          python -m venv venv
+          source venv/bin/activate
           pip install --upgrade pip setuptools wheel pyinstaller
           pip install .
 
       - name: Build Linux executable
         run: |
-          source .venv/bin/activate
+          source venv/bin/activate
           EXO_NAME=exo-linux pyinstaller exo.spec
 
-      - name: Build Windows executable with Wine
-        run: |
-          source .venv/bin/activate
-          EXO_NAME=exo-windows pyinstaller exo.spec
+      - name: Zip output (Linux)
+        run: zip -r dist-linux.zip dist/
 
-      - name: Zip output (Linux and Windows)
-        run: zip -r dist-linux-windows.zip dist/
-
-      - name: Upload artifact (Linux and Windows)
+      - name: Upload artifact (Linux)
         uses: actions/upload-artifact@v3
         with:
-          name: linux-windows-executables
-          path: dist-linux-windows.zip
+          name: linux-executable
+          path: dist-linux.zip
 
-  # macOS Job
   build-macos:
     runs-on: macos-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python 3.12
         uses: actions/setup-python@v4
@@ -61,14 +54,14 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python3 -m venv .venv
-          source .venv/bin/activate
+          python3 -m venv venv
+          source venv/bin/activate
           pip install --upgrade pip setuptools wheel pyinstaller
           pip install .
 
       - name: Build macOS executable
         run: |
-          source .venv/bin/activate
+          source venv/bin/activate
           EXO_NAME=exo-macos pyinstaller exo.spec
 
       - name: Zip output (macOS)
@@ -80,12 +73,11 @@ jobs:
           name: macos-executable
           path: dist-macos.zip
 
-  # Windows Job
   build-windows:
     runs-on: windows-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python 3.12
         uses: actions/setup-python@v4
@@ -94,8 +86,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python -m venv .venv
-          .\.venv\Scripts\activate
+          python -m venv venv
+          .\venv\Scripts\activate
           pip install --upgrade pip setuptools wheel pyinstaller
           pip install .
 
