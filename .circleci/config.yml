@@ -231,4 +231,5 @@ workflows:
       - discovery_integration_test
       - chatgpt_api_integration_test_mlx
       - test_macos_m1
+      - create_installables
       # - chatgpt_api_integration_test_tinygrad
