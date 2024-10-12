@@ -87,15 +87,12 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python -m venv venv
-          .\venv\Scripts\activate
           pip install --upgrade pip setuptools wheel pyinstaller torch torchvision torchaudio tensorflow flax
           pip install .
         shell: cmd
 
       - name: Build Windows executable
         run: |
-          .\venv\Scripts\activate
           set EXO_NAME=exo-windows
           pyinstaller exo.spec
         shell: cmd
