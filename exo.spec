@@ -23,6 +23,7 @@ model_imports = [
 
 print("Model imports:", model_imports)
 
+# Common Analysis configuration for both platforms
 a = Analysis(
     ['exo/main.py'],
     pathex=[],
@@ -49,10 +50,9 @@ a = Analysis(
 # Platform-specific handling for Linux
 if sys.platform.startswith('linux'):
     a.binaries += [
-        # Bundle key shared libraries only on Linux
-        ('/lib/x86_64-linux-gnu/libm.so.6', 'libm.so.6'),
-        ('/lib/x86_64-linux-gnu/libc.so.6', 'libc.so.6'),
-        ('/lib/x86_64-linux-gnu/libpthread.so.0', 'libpthread.so.0'),
+        ('/lib/x86_64-linux-gnu/libm.so.6', 'libm.so.6', 'BINARY'),
+        ('/lib/x86_64-linux-gnu/libc.so.6', 'libc.so.6', 'BINARY'),
+        ('/lib/x86_64-linux-gnu/libpthread.so.0', 'libpthread.so.0', 'BINARY'),
     ]
 
 # Platform-specific handling for macOS
