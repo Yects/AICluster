@@ -46,11 +46,22 @@ a = Analysis(
     noarchive=False,
 )
 
-# Add mlx for macOS
-if sys.platform.startswith('darwin'):
+# Platform-specific handling for Linux
+if sys.platform.startswith('linux'):
+    a.binaries += [
+        # Bundle key shared libraries only on Linux
+        ('/lib/x86_64-linux-gnu/libm.so.6', 'libm.so.6'),
+        ('/lib/x86_64-linux-gnu/libc.so.6', 'libc.so.6'),
+        ('/lib/x86_64-linux-gnu/libpthread.so.0', 'libpthread.so.0'),
+    ]
+
+# Platform-specific handling for macOS
+elif sys.platform.startswith('darwin'):
+    # Add mlx for macOS, as previously configured
     a.datas += Tree('venv/lib/python3.12/site-packages/mlx', prefix='mlx')
     a.hiddenimports.extend(['mlx', 'mlx.core', 'mlx.nn', 'mlx._reprlib_fix'])
 
+# Continue with common spec for both platforms
 pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 
 exe = EXE(
